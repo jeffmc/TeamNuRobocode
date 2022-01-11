@@ -8,6 +8,8 @@ import robocode.TeamRobot;
 
 public class JeffRobot extends TeamRobot {
     
+	private double[] absoluteDesiredVelocity = {0, 0};
+	
 	private boolean running = false;
 	public void run() {
     	
@@ -15,7 +17,9 @@ public class JeffRobot extends TeamRobot {
     	
     	running = true;
         while (running) {
-        	loop();
+//        	firescanLoop();
+        	determineVelocity();
+        	movementLoop();
         }
     }
     
@@ -23,21 +27,17 @@ public class JeffRobot extends TeamRobot {
         this.setColors(Color.RED, Color.PINK, Color.BLACK, Color.GREEN, Color.BLUE);
     }
     
-    private void loop() {
-    	out.println("turning down");
-    	turnToHeading(180);
-    	out.println("moving down");
-    	ahead(getY()-100);
-    	out.println("turning left");
-    	turnToHeading(270);
-    	out.println("moving left");
-    	ahead(getX()-100);
-    	stop();
-    	out.println("facing inward");
-    	turnToHeading(45);
-    	out.println("done");
-    	stop();
-    	running = false;
+    private void setADV(int x, int y) {
+    	absoluteDesiredVelocity[0] = x;
+    	absoluteDesiredVelocity[1] = y;
+    }
+    
+    private void determineVelocity() {
+    	
+    }
+    
+    private void movementLoop() {
+    	
     }
     
     // https://math.stackexchange.com/questions/110080/shortest-way-to-achieve-target-angle/2898118
