@@ -1,5 +1,7 @@
 package nu;
 
+// Double Vector with 2 components, referred to as x and y.
+
 public class DVec2 {
 
 	private double[] v = { 0, 0 };
