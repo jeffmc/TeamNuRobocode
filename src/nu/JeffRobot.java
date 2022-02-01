@@ -7,7 +7,7 @@ import robocode.Rules;
 import robocode.ScannedRobotEvent;
 import robocode.TeamRobot;
 
-// Robot by Jeff, part of Team Nu
+// Robot by Jeff McMillan, part of Team Nu
 // Currently seeks out the center of the map and shoots enemies when scanned. TODO: Implement independent scanning code.
 public class JeffRobot extends TeamRobot {
     

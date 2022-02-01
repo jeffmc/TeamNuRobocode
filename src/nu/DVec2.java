@@ -1,6 +1,7 @@
 package nu;
 
 // Double Vector with 2 components, referred to as x and y.
+// BY jeff mcmillan
 
 public class DVec2 {
 
