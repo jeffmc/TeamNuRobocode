@@ -2,18 +2,21 @@ package nu;
 
 import java.awt.Color;
 
+import robocode.BattleEndedEvent;
 import robocode.Rules;
 import robocode.ScannedRobotEvent;
 import robocode.TeamRobot;
 
+// Robot by Jeff, part of Team Nu
+// Currently seeks out the center of the map and shoots enemies when scanned. TODO: Implement independent scanning code.
 public class JeffRobot extends TeamRobot {
     
-	private double[] absoluteDesiredVelocity = {0, 0};
+	private double[] absoluteDesiredVelocity = {0, 0}; // Desired velocity variable
 	
-	private boolean running = false;
-	public void run() {
+	private boolean running = false; 
+	public void run() { // Run loop
     	
-    	setup();
+    	setup(); // Only run once
     	
     	running = true;
         while (running) {
@@ -22,8 +25,15 @@ public class JeffRobot extends TeamRobot {
         }
     }
     
+	@Override
+	public void onBattleEnded(BattleEndedEvent event) {
+		running = false;
+		stop();
+		turnRight(60000);
+	}
+	
     private void setup() {
-        this.setColors(Color.RED, Color.PINK, Color.BLACK, Color.GREEN, Color.BLUE);
+        this.setColors(Color.RED, Color.PINK, Color.BLACK, Color.GREEN, Color.BLUE); // Team colors
     }
     
     private void setADV(double x, double y) {
@@ -33,19 +43,19 @@ public class JeffRobot extends TeamRobot {
     private double getADVx() { return absoluteDesiredVelocity[0]; }
     private double getADVy() { return absoluteDesiredVelocity[1]; }
     
-    private void determineVelocity() {
+    private void determineVelocity() { // Find the desired velocity TODO: Find more complex velocities to move toward, not just centermap
     	double cx = getBattleFieldWidth()/2, cy = getBattleFieldHeight()/2;
     	setADV(cx-getX(), cy-getY());
     }
     
-    private void movementLoop() {
+    private void movementLoop() { // Move towards desired velocity
     	double dx = getADVx(), dy = getADVy();
     	double desiredTheta = toIntervalDeg(Math.toDegrees(Math.atan2(dx, dy)));
-    	double desiredSpeed = dx*dx+dy*dy;
+//    	double desiredSpeed = dx*dx+dy*dy;
     	turnToHeading(desiredTheta);
     	double hdg = getHeading();
-    	System.out.println("Heading: " + hdg);
-    	System.out.println("dtht: " + desiredTheta);
+//    	System.out.println("Heading: " + hdg);
+//    	System.out.println("dtht: " + desiredTheta);
     	if (dbleql(hdg,desiredTheta)) {
     		this.setAhead(100);
     	} else {
@@ -71,7 +81,7 @@ public class JeffRobot extends TeamRobot {
     	}
     }
     
-    private void turnToHeading(double target) {
+    private void turnToHeading(double target) { // Turn the robot to this heading
     	if (getHeading() != target) {
 	    	setTurnRight(getTurnToHeading(target));
     	} else {
@@ -83,11 +93,13 @@ public class JeffRobot extends TeamRobot {
     	return bef < 0 ? 360 + bef : bef;
     }
     
-    public void onScannedRobot(ScannedRobotEvent e) {
-    	fire(Rules.MAX_BULLET_POWER);
+    public void onScannedRobot(ScannedRobotEvent e) { // Fire when enemy seen
+		if (!isTeammate(e.getName())) fire(Rules.MAX_BULLET_POWER);
     }
     
-    private boolean dbleql(double a, double b) {
+ // Are these near equal
+//    , I think I remember seeing this code on the Robocode physics site, but I cannot find it in library so I implement myself
+    private boolean dbleql(double a, double b) { 
     	return Math.abs(a-b) < 0.1;
     }
 }
