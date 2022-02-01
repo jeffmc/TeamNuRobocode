@@ -17,7 +17,6 @@ public class JeffRobot extends TeamRobot {
     	
     	running = true;
         while (running) {
-//        	firescanLoop();
         	determineVelocity();
         	movementLoop();
         }
@@ -27,21 +26,36 @@ public class JeffRobot extends TeamRobot {
         this.setColors(Color.RED, Color.PINK, Color.BLACK, Color.GREEN, Color.BLUE);
     }
     
-    private void setADV(int x, int y) {
+    private void setADV(double x, double y) {
     	absoluteDesiredVelocity[0] = x;
     	absoluteDesiredVelocity[1] = y;
     }
+    private double getADVx() { return absoluteDesiredVelocity[0]; }
+    private double getADVy() { return absoluteDesiredVelocity[1]; }
     
     private void determineVelocity() {
-    	
+    	double cx = getBattleFieldWidth()/2, cy = getBattleFieldHeight()/2;
+    	setADV(cx-getX(), cy-getY());
     }
     
     private void movementLoop() {
-    	
+    	double dx = getADVx(), dy = getADVy();
+    	double desiredTheta = toIntervalDeg(Math.toDegrees(Math.atan2(dx, dy)));
+    	double desiredSpeed = dx*dx+dy*dy;
+    	turnToHeading(desiredTheta);
+    	double hdg = getHeading();
+    	System.out.println("Heading: " + hdg);
+    	System.out.println("dtht: " + desiredTheta);
+    	if (dbleql(hdg,desiredTheta)) {
+    		this.setAhead(100);
+    	} else {
+    		this.setAhead(0);
+    	}
+    	execute();
     }
     
     // https://math.stackexchange.com/questions/110080/shortest-way-to-achieve-target-angle/2898118
-    private void setTurnToHeading(double target) {
+    private double getTurnToHeading(double target) {
     	double t = target % 360, c = getHeading();
     	
     	double a = t - c, b = t - c + 360, y = t - c - 360;
@@ -49,22 +63,31 @@ public class JeffRobot extends TeamRobot {
     	double aa = Math.abs(a), ab = Math.abs(b), ay = Math.abs(y);
     	
     	if (aa <= ab && aa <= ay) { // A min
-    		setTurnRight(a);
+    		return a;
     	} else if (ab <= aa && ab <= ay) { // B min
-    		setTurnRight(b);
+    		return b;
     	} else { // Y min/equal
-    		setTurnRight(y);
+    		return y;
     	}
     }
     
     private void turnToHeading(double target) {
     	if (getHeading() != target) {
-	    	setTurnToHeading(target);
-	    	execute();
+	    	setTurnRight(getTurnToHeading(target));
+    	} else {
+    		setTurnRight(0);
     	}
+    }
+    
+    private double toIntervalDeg(double bef) { // returns 0-360 from a degree value
+    	return bef < 0 ? 360 + bef : bef;
     }
     
     public void onScannedRobot(ScannedRobotEvent e) {
     	fire(Rules.MAX_BULLET_POWER);
+    }
+    
+    private boolean dbleql(double a, double b) {
+    	return Math.abs(a-b) < 0.1;
     }
 }
